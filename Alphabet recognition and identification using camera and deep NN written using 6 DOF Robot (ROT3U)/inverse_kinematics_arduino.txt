@@ -1,0 +1,109 @@
+#include <Servo.h>
+#include <math.h>
+
+float L2 = 10.5;
+float L3 = 9;
+float L4 = 2.3;
+float L5 = 16;
+float r = 17; // Assuming r is constant
+float x, y, z; // Cartesian coordinates
+
+Servo servo1;
+Servo servo2;
+Servo servo3;
+Servo servo4;
+
+float theta[] = {0,0,0,0};
+void setup() {
+
+  Serial.begin(9600);
+  
+  servo1.attach(3);
+  servo2.attach(4);
+  servo3.attach(5);
+  servo4.attach(6);
+
+  initiate_angles();
+
+  Serial.println("");
+  Serial.print("Enter theta_1: ");
+  while (!Serial.available()) {} // Wait for data to be available
+  theta[0] = Serial.parseFloat(); // Read the input as a float
+  Serial.println(theta[0]);
+
+  Serial.print("Enter theta_2: ");
+  while (!Serial.available()) {} // Wait for data to be available
+  theta[1] = Serial.parseFloat(); // Read the input as a float
+  Serial.println(theta[1]);
+
+  Serial.print("Enter theta_3: ");
+  while (!Serial.available()) {} // Wait for data to be available
+  theta[2] = Serial.parseFloat(); // Read the input as a float
+  Serial.println(theta[2]);
+
+  Serial.print("Enter theta_4: ");
+  while (!Serial.available()) {} // Wait for data to be available
+  theta[3] = Serial.parseFloat(); // Read the input as a float
+  Serial.println(theta[3]);
+
+  theta[0] = theta[0];
+
+  theta[0] = radians(theta[0]);
+  theta[1] = radians(theta[1]);
+  theta[2] = radians(theta[2]);
+  theta[3] = radians(theta[3]);
+
+  float fwd_x = cos(theta[0]) * (L2 * cos(theta[1]) + L3 * cos(theta[1] - theta[2]) + r * cos(theta[1] - theta[2] - theta[3]));
+  float fwd_y = sin(theta[0]) * (L2 * cos(theta[1]) + L3 * cos(theta[1] - theta[2]) + r * cos(theta[1] - theta[2] - theta[3]));
+  float fwd_z = L2 * sin(theta[1]) + L3 * sin(theta[1] - theta[2]) + r * sin(theta[1] - theta[2] - theta[3]);
+
+  Serial.print("Value of x: ");
+  Serial.println(fwd_x);
+  Serial.print("Value of y: ");
+  Serial.println(fwd_y);  
+  Serial.print("Value of z: ");
+  Serial.println(fwd_z);  
+
+  servo_command();
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}
+
+void servo_command(){
+
+    for (int pos = 0; pos <= degrees(theta[0]); pos += 1) { // goes from 180 degrees to 0 degrees
+    servo1.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(20);                       // waits 15 ms for the servo to reach the position
+  }
+  delay(500);
+
+    //   for (int pos = 0; pos <= degrees(theta[1]); pos += 1) { // goes from 180 degrees to 0 degrees
+    // servo2.write(pos);              // tell servo to go to position in variable 'pos'
+    // delay(1); 
+    servo2.write(degrees(theta[1]));                    // waits 15 ms for the servo to reach the position
+  delay(500);
+
+      for (int pos = 0; pos <= degrees(theta[2]); pos += 1) { // goes from 180 degrees to 0 degrees
+    servo3.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(20);                       // waits 15 ms for the servo to reach the position
+  }
+  delay(500);
+
+      for (int pos = 0; pos <= degrees(theta[3]); pos += 1) { // goes from 180 degrees to 0 degrees
+    servo4.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(20);                       // waits 15 ms for the servo to reach the position
+  }
+  delay(500);
+}
+
+void initiate_angles(){
+  
+  servo1.write(0);
+  servo2.write(0);
+  servo3.write(0);
+  servo4.write(0);
+
+}
